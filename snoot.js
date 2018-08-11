@@ -102,6 +102,46 @@ function setUpPage() {
     createEventListeners();
 }
 
+//Function to validate address
+function validateAddress(fieldsetId) {
+    var inputElements = document.querySelectorAll("#" + fieldsetId + " input");
+    var errorDiv = document.querySelectorAll("#" + fieldsetId + " .errorMessage")[0];
+    var fieldsetValidity = true;
+    var elementCount = inputElements.length;
+    var currentElement = null;
+    try {
+        //Loop required input elements
+        for (var i = 0; i < elementCount; i++) {
+            currentElement = inputElements[i];
+            //Test for blank
+            if (currentElement.value === "") {
+                currentElement.style.background = "rgb(255,233,233)";
+                fieldsetValidity = false;
+            }
+            else {
+                currentElement.style.background = "white";
+            }
+        }
+        if (fieldsetValidity === false) {
+            if (fieldsetId === "billingAddress") {
+                throw "Please complete all Billing Address Information";
+            }
+            else {
+                throw "Please complete all Delivery Address Information";
+            }
+        }
+        else {
+            errorDiv.style.display = "none";
+            errorDiv.innerHTML = "";
+        }
+    }
+    catch(msg) {
+        errorDiv.style.display = "block";
+        errorDiv.innerHTML = msg;
+        formValidity = false;
+    }
+}
+
 //Function to validate entire form
 function validateForm(evt) {
     if (evt.preventDefault) {
@@ -110,6 +150,9 @@ function validateForm(evt) {
     else {
         evt.returnValue = false;
     }
+    
+    validateAddress("billingAddress");
+    validateAddress("deliveryAddress");
     
     if (formValidity === true) {
         document.getElementById("errorText").innerHTML = "";
