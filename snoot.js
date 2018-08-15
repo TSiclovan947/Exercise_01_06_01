@@ -55,12 +55,12 @@ function updateDays() {
     if (selectedMonth === "2" && deliveryYear.options[deliveryYear.selectedIndex].value === "2020") {
         deliveryDay.appendChild(twentyNine.cloneNode(true));
     }
-    
+
     //else 30 day month - thirty
     else if (selectedMonth === "4" || selectedMonth === "6" || selectedMonth === "9" || selectedMonth === "11") {
         deliveryDay.appendChild(thirty.cloneNode(true));
     }
-    
+
     //else 31 month - thirtyOne
     else if (selectedMonth === "1" || selectedMonth === "3" || selectedMonth === "5" || selectedMonth === "7" || selectedMonth === "8" || selectedMonth === "10" || selectedMonth === "12") {
         deliveryDay.appendChild(thirtyOne.cloneNode(true));
@@ -72,8 +72,7 @@ function autoCheckCustom() {
     var messageBox = document.getElementById("customText");
     if (messageBox.value !== "" && messageBox.value !== messageBox.placeholder) { // textarea actually has something in it
         document.getElementById("custom").checked = "checked";
-    }
-    else { // textarea has nothing
+    } else { // textarea has nothing
         document.getElementById("custom").checked = "";
     }
 }
@@ -85,14 +84,14 @@ function copyBillingAddress() {
     // If checkbox checked - copy all fields
     if (document.getElementById("sameAddr").checked) {
         for (var i = 0; i < billingInputElements.length; i++) {
-            deliveryInputElements[i+1].value = billingInputElements[i].value;
+            deliveryInputElements[i + 1].value = billingInputElements[i].value;
         }
         document.querySelector("#deliveryAddress select").value = document.querySelector("#billingAddress select").value;
     }
     // else erase all fields
     else {
         for (var i = 0; i < billingInputElements.length; i++) {
-            deliveryInputElements[i+1].value = "";
+            deliveryInputElements[i + 1].value = "";
         }
         document.querySelector("#deliveryAddress select").selectedIndex = -1;
     }
@@ -120,8 +119,7 @@ function validateAddress(fieldsetId) {
             if (currentElement.value === "") {
                 currentElement.style.background = "rgb(255,233,233)";
                 fieldsetValidity = false;
-            }
-            else {
+            } else {
                 currentElement.style.background = "white";
             }
         }
@@ -139,17 +137,14 @@ function validateAddress(fieldsetId) {
         if (fieldsetValidity === false) {
             if (fieldsetId === "billingAddress") {
                 throw "Please complete all Billing Address Information";
-            }
-            else {
+            } else {
                 throw "Please complete all Delivery Address Information";
             }
-        }
-        else {
+        } else {
             errorDiv.style.display = "none";
             errorDiv.innerHTML = "";
         }
-    }
-    catch(msg) {
+    } catch (msg) {
         errorDiv.style.display = "block";
         errorDiv.innerHTML = msg;
         formValidity = false;
@@ -163,7 +158,7 @@ function validateDeliveryDate() {
     var fieldsetValidity = true;
     var elementCount = selectElements.length;
     var currentElement = null;
-      try {
+    try {
         //Loop required select elements
         for (var i = 0; i < elementCount; i++) {
             currentElement = selectElements[i];
@@ -171,22 +166,101 @@ function validateDeliveryDate() {
             if (currentElement.selectedIndex === -1) {
                 currentElement.style.border = "1px solid red";
                 fieldsetValidity = false;
-            }
-            else {
+            } else {
                 currentElement.style.border = "";
             }
         }
         if (fieldsetValidity === false) {
-                throw "Please specify a delivery date.";
-        }
-        else {
+            throw "Please specify a delivery date.";
+        } else {
             errorDiv.style.display = "none";
             errorDiv.innerHTML = "";
         }
-    }
-    catch(msg) {
+    } catch (msg) {
         errorDiv.style.display = "block";
         errorDiv.innerHTML = msg;
+        formValidity = false;
+    }
+}
+
+//Function to validate payment
+function validatePayment() {
+    var errorDiv = document.querySelectorAll("#paymentInfo" + " .errorMessage")[0];
+    var fieldsetValidity = true;
+    //Get radio buttons
+    var cards = document.getElementsByName("PaymentType");
+    var ccNumElement = document.getElementById("ccNum");
+    var selectElements = document.querySelectorAll("#paymentInfo" + " select");
+    var elementCount = selectElements.length;
+    var cvvElement = document.getElementById("cvv");
+    var currentElement = null;
+    try {
+        //Check Radio buttons for required at least one checked
+        if (!cards[0].checked && !cards[1].checked && !cards[2].checked && !cards[3].checked) {
+            for (var i = 0; i < cards.length; i++) {
+                cards[i].style.outline = "1px solid red";
+            }
+            fieldsetValidity = false;
+        } else {
+            for (var i = 0; i < cards.length; i++) {
+                cards[i].style.outline = "";
+            }
+        }
+        //check card number format
+        if (ccNumElement.value === "") {
+            ccNumElement.style.background = "rgb(255,233,233)";
+            fieldsetValidity = false;
+        } else {
+            ccNumElement.style.background = "white";
+        }
+        //validate expiration date fields
+        for (var i = 0; i < elementCount; i++) {
+            currentElement = selectElements[i];
+            if (currentElement.selectedIndex === -1) {
+                currentElement.style.border = "1px solid red";
+                fieldsetValidity = false;
+            } else {
+                currentElement.style.border = "";
+            }
+        }
+        //check ccv number
+        if (cvvElement.value === "") {
+            cvvElement.style.background = "rgb(255,233,233)";
+            fieldsetValidity = false;
+        } else {
+            cvvElement.style.background = "white";
+        }
+        if (fieldsetValidity === false) {
+            throw "Please complete all Payment info.";
+        } else {
+            errorDiv.style.display = "none";
+            errorDiv.innerHTML = "";
+        }
+    } catch (msg) {
+        errorDiv.style.display = "block";
+        errorDiv.innerHTML = msg;
+        formValidity = false;
+    }
+}
+
+//Function to validate custom message
+function validateMessage() {
+    var msgBox = document.getElementById("customText");
+    var errorDiv = document.querySelectorAll("#message" + " .errorMessage")[0];
+    var fieldsetValidity = true;
+    try {
+        //Loop required select elements
+        if (document.getElementById("custom").checked && ((msgBox.value === "") || (msgBox.value === msgBox.placeholder))) {
+            throw "Please enter your Message text.";
+        } else {
+            errorDiv.style.display = "none";
+            errorDiv.innerHTML = "";
+            msgBox.style.background = "white";
+        }
+    } catch (msg) {
+        errorDiv.style.display = "block";
+        errorDiv.innerHTML = msg;
+        msgBox.style.background = "rgb(255,233,233)";
         formValidity = false;
     }
 }
@@ -195,24 +269,24 @@ function validateDeliveryDate() {
 function validateForm(evt) {
     if (evt.preventDefault) {
         evt.preventDefault();
-    }
-    else {
+    } else {
         evt.returnValue = false;
     }
-    
+
     validateAddress("billingAddress");
     validateAddress("deliveryAddress");
     validateDeliveryDate();
-    
+    validatePayment();
+    validateMessage();
+
     if (formValidity === true) {
         document.getElementById("errorText").innerHTML = "";
         document.getElementById("errorText").style.display = "none";
         document.getElementsByTagName("form")[0].submit();
-    }
-    else {
+    } else {
         document.getElementById("errorText").innerHTML = "Please fix the indicated problems and then resubmit your order.";
         document.getElementById("errorText").style.display = "block";
-        document.getElementsByTagName("form")[0].scroll(0,0);
+        document.getElementsByTagName("form")[0].scroll(0, 0);
     }
 }
 
