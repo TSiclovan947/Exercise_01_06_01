@@ -265,6 +265,43 @@ function validateMessage() {
     }
 }
 
+//Function to validate create account
+function validateCreateAccount() {
+    var errorDiv = document.querySelectorAll("#createAccount" + " .errorMessage")[0];
+    var usernameElement = document.getElementById("username");
+    var pass1Element = document.getElementById("pass1");
+    var pass2Element = document.getElementById("pass2");
+    usernameElement.style.background = "white";
+    pass1Element.style.background = "white";
+    pass2Element.style.background = "white";
+    var passwordMismatch = false;
+    var invColor = "rgb(255,233,233)";
+    var fieldsetValidity = true;
+    try {
+        if (usernameElement.value !== "" && pass1Element.value !== "" && pass2Element.value !== "") {
+            if (pass1Element.value !== pass2Element.value) {
+                passwordMismatch = true;
+                throw "Passwords entered do not Match. Please re-enter."
+            }
+        } else if (usernameElement.value === "" && pass1Element.value === "" && pass2Element.value === "") {
+            fieldsetValidity = true;
+        } else {
+            fieldsetValidity = false;
+            throw "Please enter all fields to Create Account.";
+        }
+    } catch (msg) {
+        errorDiv.style.display = "block";
+        errorDiv.innerHTML = msg;
+        pass1Element.style.background = invColor;
+        pass2Element.style.background = invColor;
+        formValidity = false;
+        if (passwordMismatch) {
+            usernameElement.style.background = "white";
+        } else {
+            usernameElement.style.background = invColor;
+        }
+    }
+}
 //Function to validate entire form
 function validateForm(evt) {
     if (evt.preventDefault) {
@@ -278,6 +315,7 @@ function validateForm(evt) {
     validateDeliveryDate();
     validatePayment();
     validateMessage();
+    validateCreateAccount();
 
     if (formValidity === true) {
         document.getElementById("errorText").innerHTML = "";
